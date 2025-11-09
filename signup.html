@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<!-- <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" /> -->
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
+		<link rel="stylesheet" href="styles/notify-me.css" />
+		<link rel="stylesheet" href="styles/form-input.css" />
+		<link rel="stylesheet" href="styles/general-layout.css" />
+		<link rel="stylesheet" type="text/css" href="styles/font-style.css" />
+
+		<title>BurgerHood | Sign Up</title>
+
+		<style>
+			#signup {
+				font-size: 21px;
+			}
+
+			#signup {
+				text-decoration: underline;
+				color: #ff9900;
+				text-underline-offset: 13px;
+			}
+
+			/* Highlight the Sign Up icon */
+			.icon-with-text:nth-child(2) {
+				color: #ff9900;
+				position: relative;
+			}
+
+			/* SIGNUP CONTAINER */
+			.signup-container {
+				flex: 1;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				text-align: center;
+				padding: 60px 20px;
+			}
+
+			.signup-container h1 {
+				color: #ff9900;
+				font-size: 38px;
+				font-weight: 700;
+			}
+
+			.signup-container p {
+				color: #bbb;
+				margin-bottom: 30px;
+			}
+
+			.already-account {
+				margin-top: 10px;
+				font-size: 14px;
+			}
+
+			.already-account a {
+				color: #ff9900;
+				text-decoration: none;
+				font-weight: 600;
+			}
+
+			.already-account a:hover {
+				text-decoration: underline;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header>
+			<a id="burgerhood" href="index.html">BURGERHOOD</a>
+			<nav>
+				<a href="" id="burger">Burger</a>
+				<a href="">Deals</a>
+				<a href="">Let's Eat</a>
+				<a href="">Drinks</a>
+				<a href="">Snacks</a>
+			</nav>
+			<div class="header-icons">
+				<a href="login.html" class="icon-with-text">
+					<i class="fa-solid fa-right-to-bracket"></i>
+					<span>Log in</span>
+				</a>
+				<a href="signup.html" class="icon-with-text" id="signup">
+					<i class="fa-regular fa-user"></i>
+				</a>
+				<a href="#" class="icon-with-text">
+					<i class="fa-solid fa-cart-shopping"></i>
+					<span>Cart</span>
+				</a>
+			</div>
+		</header>
+
+		<!-- Toast container (kept empty; JS will inject toasts notification) -->
+		<div id="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+		<div class="signup-container">
+			<h1>CREATE ACCOUNT</h1>
+			<p>Join the Hood and get that real flavor.</p>
+
+			<form id="signup-form" autocomplete="off">
+				<div class="input-wrap">
+					<input type="text" id="fullname" class="required" placeholder="Fullname" />
+					<i id="errorIcon" class="fa-solid fa-circle-exclamation errorIcon"></i>
+				</div>
+
+				<div class="input-wrap">
+					<input type="email" id="email" class="required" placeholder="Email" />
+					<i id="errorIcon" class="fa-solid fa-circle-exclamation errorIcon"></i>
+				</div>
+
+				<div class="input-wrap">
+					<input type="password" id="password" class="required" placeholder="Password" />
+					<i id="errorIcon" class="fa-solid fa-circle-exclamation errorIcon"></i>
+				</div>
+
+				<div class="input-wrap">
+					<input type="password" id="confirmPassword" class="required" placeholder="Confirm Password" />
+					<i id="errorIcon" class="fa-solid fa-circle-exclamation errorIcon"></i>
+				</div>
+
+				<button type="submit">SIGN UP</button>
+			</form>
+
+			<div class="already-account">Already have an account? <a href="login.html">Sign in</a></div>
+
+			<div class="social-login">
+				<a class="social-btn google" href="index.html"><i class="fa-brands fa-google"></i> Continue with Google</a>
+				<a class="social-btn facebook" href="index.html"><i class="fa-brands fa-facebook-f"></i> Continue with Facebook</a>
+			</div>
+
+			<div class="social-icons">
+				<a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+				<a href="#"><i class="fa-brands fa-instagram"></i></a>
+				<a href="#"><i class="fa-brands fa-twitter"></i></a>
+			</div>
+		</div>
+
+		<footer>© 2025 BurgerHood. All rights reserved.</footer>
+
+		<script src="js/notify-me.js"></script>
+		<script src="js/input-validation.js"></script>
+
+		<script>
+			/**
+			 * local storage setup so that data remains saved even after the page is reloaeded
+			 * as long as your code runs in the browser, local storage already exist
+			 * this is like a built-in database inside the browser no need to install anything or import libraries or learning sql queries
+			 * this is for your app becomes a dynamic at least
+			 */
+			const LS_KEY = "users";
+
+			// load existing users or initialize empty
+			const users = JSON.parse(localStorage.getItem(LS_KEY) || "[]");
+
+			// this is a function for handling saving users back to localStorage
+			function saveUsers() {
+				localStorage.setItem(LS_KEY, JSON.stringify(users));
+			}
+
+			// access all elements
+			const inputs = document.querySelectorAll(".required");
+			const inputFullname = document.getElementById("fullname");
+			const inputEmail = document.getElementById("email");
+			const inputPassword = document.getElementById("password");
+			const inputConfirmPassword = document.getElementById("confirmPassword");
+			const signupForm = document.getElementById("signup-form");
+
+			// live checking for all required inputs
+			// adds red border and icon when empty, nad it clears when not.
+			for (const input of inputs) {
+				input.addEventListener("input", function () {
+					showError(this, isEmpty(this));
+				});
+			}
+
+			// live validation for specific fields
+			inputFullname.addEventListener("input", function () {
+				// only validate if not empty, otherwise let the empty check above handle it
+				// this refers to the inputFullname object
+				if (isEmpty(this)) return;
+				showError(this, !isValidName(this));
+			});
+
+			inputEmail.addEventListener("input", function () {
+				if (isEmpty(this)) return;
+				showError(this, !isValidEmail(this));
+			});
+
+			// basic password length error response
+			inputPassword.addEventListener("input", function () {
+				if (isEmpty(this)) return;
+				showError(this, this.value.trim().length < 8); // minimum of 8 chars
+			});
+
+			inputConfirmPassword.addEventListener("input", function () {
+				if (isEmpty(this)) return;
+				showError(this, this.value.trim() !== inputPassword.value.trim());
+			});
+
+			// submit event handler
+			signupForm.addEventListener("submit", function (e) {
+				e.preventDefault();
+
+				let hasError = false;
+
+				// required fields check manually, not using required input attribute for response control and notification
+				if (isEmpty(inputFullname)) {
+					showError(inputFullname, true);
+					alert("Fullname is required!");
+					return;
+				}
+				if (isEmpty(inputEmail)) {
+					showError(inputEmail, true);
+					alert("Email is required!");
+					return;
+				}
+				if (isEmpty(inputPassword)) {
+					showError(inputPassword, true);
+					alert("Password is required!");
+					return;
+				}
+				if (isEmpty(inputConfirmPassword)) {
+					showError(inputConfirmPassword, true);
+					alert("Confirm your password!");
+					return;
+				}
+
+				// Field-specific validations (only if filled)
+				if (!isEmpty(inputFullname) && !isValidName(inputFullname)) {
+					showError(inputFullname, true);
+					alert("Fullname: letters and spaces only.");
+					return;
+				}
+
+				if (!isEmpty(inputEmail) && !isValidEmail(inputEmail)) {
+					showError(inputEmail, true);
+					alert("Enter a valid email address.");
+					return;
+				}
+
+				if (!isEmpty(inputPassword) && inputPassword.value.trim().length < 8) {
+					showError(inputPassword, true);
+					alert("Password must be at least 8 characters.");
+					return;
+				}
+
+				// add validation for password must contain at least one digit, alphabet or special character
+
+				// check if passwords are equal
+				if (!isEmpty(inputConfirmPassword) && inputConfirmPassword.value.trim() !== inputPassword.value.trim()) {
+					showError(inputConfirmPassword, true);
+					alert("Passwords do not match.");
+					return;
+				}
+
+				// if everything is validated then save new user
+				const newUser = {
+					id: users.length + 1,
+					role: "client",
+					fullname: inputFullname.value.trim(),
+					email: inputEmail.value.trim(),
+					password: inputPassword.value.trim(),
+				};
+
+				// Check for duplicate email (case-insensitive)
+				const emailExists = users.some((u) => u.email.toLowerCase() === newUser.email.toLowerCase());
+				if (emailExists) {
+					alert("Email already exists.");
+					return;
+				}
+
+				users.push(newUser);
+				saveUsers(); // <-- saves to localStorage
+
+				// this is to clear the form & errors without reloading the page
+				signupForm.reset();
+				console.log("All users:", users);
+			});
+		</script>
+	</body>
+</html>

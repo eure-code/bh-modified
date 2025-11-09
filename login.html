@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<!-- <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" /> -->
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
+		<link rel="stylesheet" href="styles/notify-me.css" />
+		<link rel="stylesheet" href="styles/form-input.css" />
+		<link rel="stylesheet" href="styles/general-layout.css" />
+		<link rel="stylesheet" type="text/css" href="styles/font-style.css" />
+
+		<title>Login</title>
+
+		<style>
+			#Login {
+				text-decoration-color: #ff9900;
+				text-underline-offset: 6px;
+			}
+
+			/*log in icon*/
+			#Login i {
+				font-size: 21px;
+			}
+
+			#Login {
+				text-decoration: underline;
+				color: #ff9900;
+				text-underline-offset: 13px;
+			}
+
+			/* login area div*/
+			.login-container {
+				flex: 1;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				text-align: center;
+				padding: 50px 20px;
+			}
+
+			.login-container h1 {
+				color: #ff9900;
+				font-size: 36px;
+				font-weight: 700;
+			}
+
+			.login-container p {
+				color: #bbb;
+				margin-bottom: 30px;
+			}
+
+			.create-account {
+				margin-top: 10px;
+				font-size: 14px;
+			}
+
+			.create-account a {
+				color: #ff9900;
+				text-decoration: none;
+				font-weight: 600;
+			}
+
+			.create-account a:hover {
+				text-decoration: underline;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header>
+			<a id="burgerhood" href="burgerhood.html">BURGERHOOD</a>
+			<nav>
+				<a href="" id="burger">Burger</a>
+				<a href="">Deals</a>
+				<a href="">Let's Eat</a>
+				<a href="">Drinks</a>
+				<a href="">Snacks</a>
+			</nav>
+			<div class="header-icons">
+				<a href="#" class="icon-with-text" id="Login">
+					<i class="fa-solid fa-right-to-bracket"></i>
+				</a>
+				<a href="signup.html" class="icon-with-text">
+					<i class="fa-regular fa-user"></i>
+					<span>Sign up</span>
+				</a>
+				<a href="#" class="icon-with-text">
+					<i class="fa-solid fa-cart-shopping"></i>
+					<span>Cart</span>
+				</a>
+			</div>
+		</header>
+
+		<div id="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+		<div class="login-container">
+			<h1>WELCOME BACK</h1>
+			<p>Log in to your account</p>
+
+			<form id="login-form">
+				<div class="input-wrap">
+					<input type="email" id="email" class="required" placeholder="Email" />
+					<i id="errorIcon" class="fa-solid fa-circle-exclamation errorIcon"></i>
+				</div>
+				<div class="input-wrap">
+					<input type="password" id="password" class="required" placeholder="Password" />
+					<i id="errorIcon" class="fa-solid fa-circle-exclamation errorIcon"></i>
+				</div>
+				<button type="submit">SIGN IN</button>
+			</form>
+
+			<div class="create-account">Don’t have an account? <a href="signup.html">Create Account</a></div>
+
+			<div class="social-login">
+				<a class="social-btn google" href="burgerhood.html"><i class="fa-brands fa-google"></i> Continue with Google</a>
+				<a class="social-btn facebook" href="burgerhood.html"><i class="fa-brands fa-facebook-f"></i> Continue with Facebook</a>
+			</div>
+
+			<div class="social-icons">
+				<a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+				<a href="#"><i class="fa-brands fa-instagram"></i></a>
+				<a href="#"><i class="fa-brands fa-twitter"></i></a>
+			</div>
+		</div>
+
+		<footer>© 2025 BurgerHood. All rights reserved.</footer>
+
+		<script src="js/input-validation.js"></script>
+
+		<script>
+			// get users if exist in the local storage if not initialize users as empty array
+			const users = JSON.parse(localStorage.getItem("users") || "[]");
+
+			const loginForm = document.getElementById("login-form");
+			const inputEmail = document.getElementById("email");
+			const inputPassword = document.getElementById("password");
+
+			// form submit event handling
+			loginForm.addEventListener("submit", (e) => {
+				e.preventDefault();
+
+				const email = inputEmail.value.trim();
+				const password = inputPassword.value.trim();
+
+				let hasError = false;
+				if (!email) {
+					showNotification({ type: "error", message: "Please enter an email!" });
+					hasError = true;
+				}
+
+				if (!password) {
+					showNotification({ type: "error", message: "Please provide a password!" });
+					hasError = true;
+				}
+
+				if (hasError) return;
+
+				// check if email matches from the users array stored in local storage iof the browser
+				const found = users.find((user) => user.email.toLowerCase() === email.toLowerCase() && user.password === password);
+
+				if (found) {
+					// showNotification({ type: "success", message: "successfully logged in" });
+
+					// the following is to set the users info as the current loggin in user so that the browser will remember whose currently logged in
+					// and so if navigate to other pages the currently logged in user will still be determined by the browser
+					// this is for simulation of log in and out sessions
+
+					localStorage.setItem("activeUser", JSON.stringify(found));
+
+					// redirect to index or homepage
+					window.location.href = "index.html";
+				} else {
+					// alert("Invalid email or password!");
+					showNotification({ type: "error", message: "Invalid email or password!" });
+
+				}
+			});
+		</script>
+	</body>
+</html>
