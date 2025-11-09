@@ -140,6 +140,7 @@
 
 		<footer>© 2025 BurgerHood. All rights reserved.</footer>
 
+		<script src="js/notify-me.js"></script>
 		<script src="js/input-validation.js"></script>
 
 		<script>
@@ -191,7 +192,7 @@
 			// basic password length error response
 			inputPassword.addEventListener("input", function () {
 				if (isEmpty(this)) return;
-				showError(this, this.value.trim().length < 8); // minimum of 8 chars
+				showError(this, this.value.trim().length < 6); // minimum of 6 chars
 			});
 
 			inputConfirmPassword.addEventListener("input", function () {
@@ -208,50 +209,51 @@
 				// required fields check manually, not using required input attribute for response control and notification
 				if (isEmpty(inputFullname)) {
 					showError(inputFullname, true);
-					alert("Fullname is required!");
-					return;
+					showNotification({ type: "error", message: "Fullname is required!" });
+					hasError = true;
 				}
 				if (isEmpty(inputEmail)) {
 					showError(inputEmail, true);
-					alert("Email is required!");
-					return;
+					showNotification({ type: "error", message: "Email is required!" });
+					hasError = true;
 				}
 				if (isEmpty(inputPassword)) {
 					showError(inputPassword, true);
-					alert("Password is required!");
-					return;
+					showNotification({ type: "error", message: "Password is required!" });
+					hasError = true;
 				}
 				if (isEmpty(inputConfirmPassword)) {
 					showError(inputConfirmPassword, true);
-					alert("Confirm your password!");
-					return;
+					showNotification({ type: "error", message: "Confirm your password!" });
+					hasError = true;
 				}
 
 				// Field-specific validations (only if filled)
 				if (!isEmpty(inputFullname) && !isValidName(inputFullname)) {
 					showError(inputFullname, true);
-					alert("Fullname: letters and spaces only.");
-					return;
+					showNotification({ type: "error", message: "Fullname: letters and spaces only." });
+					hasError = true;
 				}
 
 				if (!isEmpty(inputEmail) && !isValidEmail(inputEmail)) {
 					showError(inputEmail, true);
-					alert("Enter a valid email address.");
-					return;
+					showNotification({ type: "error", message: "Enter a valid email address." });
+					hasError = true;
 				}
 
-				if (!isEmpty(inputPassword) && inputPassword.value.trim().length < 8) {
+				if (!isEmpty(inputPassword) && inputPassword.value.trim().length < 6) {
 					showError(inputPassword, true);
-					alert("Password must be at least 8 characters.");
-					return;
+					showNotification({ type: "error", message: "Password must be at least 6 characters." });
+					hasError = true;
 				}
 
-				// add validation for password must contain at least one digit, alphabet or special character
-
-				// check if passwords are equal
 				if (!isEmpty(inputConfirmPassword) && inputConfirmPassword.value.trim() !== inputPassword.value.trim()) {
 					showError(inputConfirmPassword, true);
-					alert("Passwords do not match.");
+					showNotification({ type: "error", message: "Passwords do not match." });
+					hasError = true;
+				}
+
+				if (hasError) {
 					return;
 				}
 
@@ -263,17 +265,19 @@
 					email: inputEmail.value.trim(),
 					password: inputPassword.value.trim(),
 				};
-
+				
 				// Check for duplicate email (case-insensitive)
 				const emailExists = users.some((u) => u.email.toLowerCase() === newUser.email.toLowerCase());
 				if (emailExists) {
-					alert("Email already exists.");
+					showNotification({ type: "error", message: "Email already exists." });
 					return;
 				}
-
+				
 				users.push(newUser);
 				saveUsers(); // <-- saves to localStorage
-
+				
+				showNotification({ type: "success", message: "Added new user successfully!", duration: 4000 });
+				
 				// this is to clear the form & errors without reloading the page
 				signupForm.reset();
 				console.log("All users:", users);

@@ -127,17 +127,17 @@
 
 		<footer>© 2025 BurgerHood. All rights reserved.</footer>
 
+		<script src="js/notify-me.js"></script>
 		<script src="js/input-validation.js"></script>
 
+
 		<script>
-			// get users if exist in the local storage if not initialize users as empty array
 			const users = JSON.parse(localStorage.getItem("users") || "[]");
 
 			const loginForm = document.getElementById("login-form");
 			const inputEmail = document.getElementById("email");
 			const inputPassword = document.getElementById("password");
 
-			// form submit event handling
 			loginForm.addEventListener("submit", (e) => {
 				e.preventDefault();
 
